@@ -169,7 +169,7 @@ public class MotorPHPayrollSystem {
                     } catch (Exception e) { System.out.println("Error accessing employee records."); }
                     
                     if (!employeeFound) {
-                        System.out.println("Employee number does not exists.");
+                        System.out.println("Employee number does not exist.");
                     }
                     
                 } else if (menuSelection.equals("2")) {
@@ -224,7 +224,7 @@ public class MotorPHPayrollSystem {
                                 }
                             }
                         } catch (Exception e) { System.out.println("Record access error."); }
-                        if (!found) System.out.println("Employee number does not exists.");
+                        if (!found) System.out.println("Employee number does not exist.");
                         else { finalizePayrollProcess(); }
                     } else if (subChoice.equals("2")) {
                         try (BufferedReader reader = new BufferedReader(new FileReader(empFile))) {
@@ -297,7 +297,7 @@ public class MotorPHPayrollSystem {
     }
 
     static void terminateSession() {
-        System.out.println("\nYou've been logged out. To log in please enter your details.");
+        System.out.println("\nClosing the program . . .");
     }
 
     static void finalizePayrollProcess() {
@@ -305,7 +305,7 @@ public class MotorPHPayrollSystem {
         System.out.print("\nProcess another payroll. ");
     }
     
-public static void main(String[] args) {
+    public static void main(String[] args) {
         // Define internal resource paths for CSV files
         String employeeDetailsPath = "resources/MotorPH - Employee Details.csv";
         String attendanceRecordsPath = "resources/MotorPH - Attendance Record.csv";
@@ -319,26 +319,24 @@ public static void main(String[] args) {
         System.out.println("      MOTORPH PAYROLL SYSTEM       ");
         System.out.println("===================================");
 
-        // Infinite loop to keep the program running after successful logouts
-        while (true) {
-            System.out.print("Enter username: ");
-            String userEntry = inputScanner.nextLine().trim();
-            System.out.print("Enter password: ");
-            String passEntry = inputScanner.nextLine().trim();
+        
+        System.out.print("Enter username: ");
+        String userEntry = inputScanner.nextLine().trim();
+        System.out.print("Enter password: ");
+        String passEntry = inputScanner.nextLine().trim();
 
-            // Authentication Logic: Terminates the program if credentials do not match
-            if (!((userEntry.equals("employee") || userEntry.equals("payroll_staff")) && passEntry.equals("12345"))) {
-                System.out.println("Incorrect username and/or password.");
-                return; // Ends the main method, thus closing the application
-            }
+        // Authentication Logic: Terminates the program if credentials do not match
+        if (!((userEntry.equals("employee") || userEntry.equals("payroll_staff")) && passEntry.equals("12345"))) {
+            System.out.println("Incorrect username and/or password.");
+            return; // Ends the main method, thus closing the application
+        }
 
-            // Redirection logic based on user role
-            System.out.println("\nLog in successful!");
-            if (userEntry.equals("employee")) {
-                handleEmployeeSession(inputScanner, employeeDetailsPath);
-            } else {
-                handleStaffSession(inputScanner, employeeDetailsPath, attendanceRecordsPath, hourFormat);
-            }
+        // Redirection logic based on user role
+        System.out.println("\nLog in successful!");
+        if (userEntry.equals("employee")) {
+            handleEmployeeSession(inputScanner, employeeDetailsPath);
+        } else {
+            handleStaffSession(inputScanner, employeeDetailsPath, attendanceRecordsPath, hourFormat);
         }
     }
 }
