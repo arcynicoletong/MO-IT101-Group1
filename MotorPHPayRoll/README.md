@@ -21,7 +21,7 @@ This program reads employee details and attendance from CSV files, enforces Moto
 ### **What this program does**
 
 1. Login:
-   • Valid usernames: employee, payroll\_staff
+   • Valid usernames: employee, payroll_staff
    • Password: 12345
    • Wrong credentials → prints Incorrect username and/or password. and terminates.
 2. If username = employee
@@ -490,10 +490,11 @@ Why essential: It displays and follows rules, and clearly shows that all deducti
 
 1. Run the Java file.
 2. Log in as either:
-
-&nbsp;	• employee / 12345
-
-&nbsp;	• payroll\_staff / 12345
-
-3\. Follow the on‑screen menu.
+    Employee
+        username: employee
+        password: 12345
+    Payroll Stafff
+        username: payroll_staff
+        password: 12345 
+3. Follow the on‑screen menu.
 
