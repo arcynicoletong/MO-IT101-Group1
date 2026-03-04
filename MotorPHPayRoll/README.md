@@ -15,16 +15,6 @@ This program handles profile viewing for MotorPH employees and payroll processin
 
 ---
 
-## CSV Reference
-
-- **MotorPH - Employee Details.csv**  
-  Contains: Employee Number, Last Name, First Name, Birthday, …, Gross Semi-monthly Rate, and Hourly Rate
-
-- **MotorPH - Attendance Record.csv**  
-  Contains: Employee Number, Last Name, First Name, Attendance Date (MM/DD/YYYY), Log In and Log Out Time (H:mm | 24-hour format)
-
----
-
 ## What This Program Does
 
 The program is designed to receive user input, read data from the source CSV files, and display information based on the user’s request/input. Once the program is run, it will show a simple header displaying the company’s name:
@@ -41,6 +31,8 @@ From here, the user will be asked to log in using their credentials and choose t
 
 ## User Workflow
 
+Here's the step-by-step description of how the program works from the outsise (through the console).
+
 ### 1. User Log-in
 
 **Valid Usernames:** employee | payroll_staff  
@@ -51,8 +43,6 @@ Invalid credentials print:
 Incorrect username and/or password.
 ```
 and terminate the program.
-
----
 
 ### 2. Employee Session
 
@@ -68,8 +58,6 @@ Menu:
 ```
 Employee number does not exist.
 ```
-
----
 
 ### 3. Payroll Staff Session
 
@@ -91,8 +79,6 @@ Payroll output includes:
 - Monthly cutoff salary breakdown
 - Deductions
 - Net salary
-
----
 
 ## Notes
 
@@ -716,7 +702,18 @@ public static void main(String[] args) {
 - Time paid window is strictly 08:00–17:00.
 - Payroll is always processed from June–December 2024.
 - No OOP concepts were applied in this implementation (because the team does not know anythign either >.<).
+  
+---
 
+## CSV Reference
+The data files are in CSV format and must be placed inside the Resources folder.
+
+- **MotorPH - Employee Details.csv**  
+  Contains: Employee Number, Last Name, First Name, Birthday, …, Gross Semi-monthly Rate, and Hourly Rate
+
+- **MotorPH - Attendance Record.csv**  
+  Contains: Employee Number, Last Name, First Name, Attendance Date (MM/DD/YYYY), Log In and Log Out Time (H:mm | 24-hour format)
+  
 ---
 
 ## Project Plan
@@ -724,6 +721,7 @@ public static void main(String[] args) {
 The team have had many challenges in aligning their schedules and learning paces together, but remained as one to meet the MotorPH's project deadline. Below is the latest project plan of the team, updated as of March 05, 2022.
 
 Project Plan link: https://docs.google.com/spreadsheets/d/1Lux9k8_aYuvp0zqG6S2VvVciuUxU-RZNWELsfzmeJYs/edit?usp=drive_link
+
 
 
 
