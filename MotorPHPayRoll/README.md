@@ -129,7 +129,7 @@ import java.time.Duration;					// This tool measures the exact gap (duration) be
 import java.time.LocalTime;					// We use this to create "time objects" so the program understands 8:00 AM is a time, not just text.
 import java.time.YearMonth;					// This helps us handle calendar logic, like checking if a month has 30 or 31 days for the cutoff.
 import java.time.format.DateTimeFormatter;	// This is our "translator" that turns text from the CSV (like "08:30") into a real Java time object.
-import java.util.Scanner;					// As taught in our synchronous class, this is tool the that lets the program "read" what the user types into the console.
+import java.util.Scanner;					// As taught in our synchronous class, this is the tool  that lets the program read what the user types into the console.
 ```
 
 ---
@@ -721,6 +721,7 @@ The data files are in CSV format and must be placed inside the Resources folder.
 The team have had many challenges in aligning their schedules and learning paces together, but remained as one to meet the MotorPH's project deadline. Below is the latest project plan of the team, updated as of March 05, 2022.
 
 Project Plan link: https://docs.google.com/spreadsheets/d/1Lux9k8_aYuvp0zqG6S2VvVciuUxU-RZNWELsfzmeJYs/edit?usp=drive_link
+
 
 
 
