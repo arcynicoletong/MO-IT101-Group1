@@ -1,10 +1,8 @@
 # MOTORPH PAYROLL SYSTEM (GROUP 1)
 
-## Computer Programming 1 (Milestone 2)
+### Computer Programming 1 (Milestone 2)
 
-**H1101**
-
-### Group 1
+### H1101 Group 1
 - Anna Veronica Cortes  
 - Arcy Nicole Tong  
 - Gwyneth Quisora  
@@ -732,3 +730,12 @@ public static void main(String[] args) {
 - Time paid window is strictly 08:00–17:00.
 - Payroll is always processed from June–December 2024.
 - No OOP concepts were applied in this implementation (because the team does not know anythign either >.<).
+
+---
+
+## Project Plan
+
+The team have had many challenges in aligning their schedules and learning paces together, but remained as one to meet the MotorPH's project deadline. Below is the latest project plan of the team, updated as of March 05, 2022.
+
+Project Plan link: https://docs.google.com/spreadsheets/d/1Lux9k8_aYuvp0zqG6S2VvVciuUxU-RZNWELsfzmeJYs/edit?usp=drive_link
+
