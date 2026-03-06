@@ -345,22 +345,6 @@ static double computePagIbig(double monthlyGross) {
 This method determines the monthly withholding tax using the tax table. Tax is computed on income remaining after statutory deductions.
 
 ```java
-static double computePhilHealth(double monthlyGross) {
-
-	// If there's no income, there's no deduction.
-	if (monthlyGross <= 0) return 0.0;
-
-	// As per PhilHealth guidelines, the total monthly premium is 3% of the monthly gross.
-	double premium = monthlyGross * 0.03;
-
-	// Sets the minimum (PHP 300) and maximum (PHP 1800) premium.
-	if (premium < 300.0) premium = 300.0;
-	if (premium > 1800.0) premium = 1800.0;
-
-	// The total premium is shared 50/50 between the employer and employee.
-	return premium / 2.0;
-}
-
 static double computeWithholdingTax(double taxableIncome) {
 
 	// If the income is 20,833 or less, the employee is tax-exempt.
@@ -721,6 +705,7 @@ The data files are in CSV format and must be placed inside the Resources folder.
 The team have had many challenges in aligning their schedules and learning paces together, but remained as one to meet the MotorPH's project deadline. Below is the latest project plan of the team, updated as of March 05, 2022.
 
 Project Plan link: https://docs.google.com/spreadsheets/d/1Lux9k8_aYuvp0zqG6S2VvVciuUxU-RZNWELsfzmeJYs/edit?usp=drive_link
+
 
 
 
