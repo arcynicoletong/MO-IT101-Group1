@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -18,8 +19,26 @@ import java.util.Scanner;
  * please refer to our README file.
  */
 public class MotorPHPayrollSystem {
-
-    /* --------------- METHOD 1: DISPLAY EMPLOYEE INFORMATION -----------------
+    
+    /* ----------------------- METHOD 1: FILE READER -------------------------
+     * This method reads a file and stores the information in a multidimensional
+     * String array.
+    */
+    static void readFile(String filename, ArrayList<String[]> data) {
+        String row;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            while ((row = reader.readLine()) != null) {
+                String[] dataFields = row.split(",");
+                data.add(dataFields);
+            }
+            reader.close();
+        } catch (Exception e) {
+            System.out.println("An error occurred while reading the file (" + filename + "): + e");
+        }
+    }
+    
+    /* --------------- METHOD 2: DISPLAY EMPLOYEE INFORMATION -----------------
      * This method displays employee information and is designed to be reused 
      * in payroll_staff sessions as employee salary information header.
     */
@@ -31,7 +50,7 @@ public class MotorPHPayrollSystem {
         System.out.println("Birthday: " + data[3]);
     }
 
-    /* ---------------------- METHOD 2: DATA PARSING ---------------------------
+    /* ---------------------- METHOD 3: DATA PARSING ---------------------------
      * This method converts a String from the CSV file into a double number.
      * It removes quotes and whitespace from the input to ensure correct parsing.
     */
@@ -43,7 +62,7 @@ public class MotorPHPayrollSystem {
         }
     }
 
-    /* ---------------- METHOD 3: WORKED HOURS COMPUTATION ---------------------
+    /* ---------------- METHOD 4: WORKED HOURS COMPUTATION ---------------------
      * This method calculates the total hours worked by an employee during a shift.
      * It strictly counts time between 8:00 AM and 5:00 PM and applies a 10-minute 
      * grace period. Logins before 8:11 AM are treated as 8:00 AM as instructed.
@@ -65,7 +84,7 @@ public class MotorPHPayrollSystem {
     }
 
 
-    /* --------------- METHOD 4: UNPAID LUNCH OVERLAP CALCULATION --------------
+    /* --------------- METHOD 5: UNPAID LUNCH OVERLAP CALCULATION --------------
      * This method determines the number of minutes where two (2) time intervals 
      * (i.e. the whole day worked hours and the 1-hour unpaid lunch)overlap. 
      * Our team used this method to avoid improper 1-hour time deduction.
@@ -80,7 +99,7 @@ public class MotorPHPayrollSystem {
         return 0.0;
     }
 
-    /* -------------------- METHOD 5: SSS CALCULATION --------------------------
+    /* -------------------- METHOD 6: SSS CALCULATION --------------------------
      * This methdod computes the monthly SSS contribution based on gross salary.
      * It utilizes the bracketed contribution table and enforces a maximum cap.
     */
@@ -101,7 +120,7 @@ public class MotorPHPayrollSystem {
         return Math.min(totalContribution, maximumContribution);
     }
 
-    /* ---------------- METHOD 6: PHILHEALTH CALCULATION -----------------------
+    /* ---------------- METHOD 7: PHILHEALTH CALCULATION -----------------------
      * This method calculates the PhilHealth premium share for an employee.
      * Applies a 3% premium rate with a minimum cap of 300 and a maximum of 1800.
     */
@@ -113,7 +132,7 @@ public class MotorPHPayrollSystem {
         return premium / 2.0;
     }
 
-    /* ---------------- METHOD 7: PAG-IBIG CALCULATION ------------------------
+    /* ---------------- METHOD 8: PAG-IBIG CALCULATION ------------------------
      * This method calculates the Pag-IBIG contribution for the employee.
      * Applies tiered rates based on income level and caps at 100 pesos.
     */
@@ -140,7 +159,7 @@ public class MotorPHPayrollSystem {
             }
     }
 
-    /* ---------------- METHOD 8: WITHHOLDING TAX CALCULATION ------------------
+    /* ---------------- METHOD 9: WITHHOLDING TAX CALCULATION ------------------
      * Determines the monthly withholding tax using the BIR graduated table.
      * Tax is computed on income remaining after statutory deductions.
     */
@@ -153,11 +172,13 @@ public class MotorPHPayrollSystem {
         else return 200833.33 + (taxableIncome - 666667) * 0.35;
     }
 
-    /* ---------------- METHOD 9: EMPLOYEE SESSION HANDLER ------------------------
+    /* ---------------- METHOD 10: EMPLOYEE SESSION HANDLER ------------------------
      * This method manages the interactive menu for users with the "employee" role.
      * Handles profile retrieval and secure logout procedures.
     */
     static void handleEmployeeSession(Scanner scanner, String employeeFilePath) {
+        ArrayList<String[]> employeeInformation = new ArrayList<>();
+        readFile(employeeFilePath,employeeInformation);
         boolean sessionActive = true;
         boolean hasViewedInformation = false;
 
@@ -173,26 +194,19 @@ public class MotorPHPayrollSystem {
                     System.out.print("Enter Employee #: ");
                     String targetId = scanner.nextLine().trim();
                     boolean employeeFound = false;
-                    try (BufferedReader reader = new BufferedReader(new FileReader(employeeFilePath))) {
-                        reader.readLine();
-                        String row;
-                        while ((row = reader.readLine()) != null) {
-                            String[] dataFields = row.split(",");
-                            if (dataFields[0].equals(targetId)) {
-                                displayProfileHeader(dataFields);
-                                System.out.println("===================================");
-                                System.out.println("Request to view employee information is successful.");
-                                employeeFound = true;
-                                hasViewedInformation = true;
-                                break;
-                            }
+                    for (String[] employee : employeeInformation) {
+                        if (employee[0].equals(targetId)) {
+                            displayProfileHeader(employee);
+                            System.out.println("===================================");
+                            System.out.println("Request to view employee information is successful.");
+                            employeeFound = true;
+                            hasViewedInformation = true;
+                            break;
                         }
-                        reader.close();
-                    } catch (Exception e) { System.out.println("Error accessing employee records."); }
+                    }
                     if (!employeeFound) {
                         System.out.println("Employee number does not exist.");
-                    }
-                    
+                    }     
                 } else if (menuSelection.equals("2")) {
                     terminateSession();
                     sessionActive = false;
@@ -208,11 +222,17 @@ public class MotorPHPayrollSystem {
         }
     }
 
-    /* -------------- METHOD 10: PAYROLL STAFF SESSION HANDLER -----------------
+    /* -------------- METHOD 11: PAYROLL STAFF SESSION HANDLER -----------------
      * This method manages the interactive menu for users with the "payroll_staff" role.
      * Provides processing options for single or bulk employee payroll.
     */
     static void handleStaffSession(Scanner scanner, String empFile, String attFile, DateTimeFormatter timeFormat) {
+        ArrayList<String[]> employeeInformation = new ArrayList<>();
+        readFile(empFile,employeeInformation);
+        
+        ArrayList<String[]> attendanceInformation = new ArrayList<>();
+        readFile(attFile,attendanceInformation);
+                
         boolean sessionActive = true;
         while (sessionActive) {
             System.out.println("\nPlease enter the number of your desired action.");
@@ -235,28 +255,19 @@ public class MotorPHPayrollSystem {
                         System.out.print("Enter Employee #: ");
                         String id = scanner.nextLine().trim();
                         boolean found = false;
-                        try (BufferedReader reader = new BufferedReader(new FileReader(empFile))) {
-                            reader.readLine(); String row;
-                            while ((row = reader.readLine()) != null) {
-                                String[] data = row.split(",");
-                                if (data[0].equals(id)) {
-                                    executePayrollLogic(data, attFile, timeFormat);
-                                    found = true; break;
-                                }
+                        for (String[] employee : employeeInformation) {
+                            if (employee[0].equals(id)) {
+                                executePayrollLogic(employee, attendanceInformation, timeFormat);
+                                found = true; break;
                             }
-                            reader.close();
-                        } catch (Exception e) { System.out.println("Record access error."); }
+                        }
                         if (!found) System.out.println("Employee number does not exist.");
                         else { finalizePayrollProcess(); }
                     } else if (subChoice.equals("2")) {
-                        try (BufferedReader reader = new BufferedReader(new FileReader(empFile))) {
-                            reader.readLine(); String row;
-                            while ((row = reader.readLine()) != null) {
-                                executePayrollLogic(row.split(","), attFile, timeFormat);
-                            }
-                            finalizePayrollProcess();
-                            reader.close();
-                        } catch (Exception e) { System.out.println("Record access error."); }
+                        for (String[] employee : employeeInformation) {
+                                executePayrollLogic(employee, attendanceInformation, timeFormat);
+                        }
+                        finalizePayrollProcess();
                     } else if (subChoice.equals("3")) {
                         terminateSession();
                         payrollModeActive = false; sessionActive = false;
@@ -269,12 +280,12 @@ public class MotorPHPayrollSystem {
         }
     }
 
-    /* ------------------ METHOD 11: PAYROLL CALCULATOR ------------------------
+    /* ------------------ METHOD 12: PAYROLL CALCULATOR ------------------------
      * This method executes the mathematical processing of employee earnings.
      * It connects the attendance records with all the previous math methods 
      * (i.e. the calculators for SSS, PhilHealth, Pag-IBIG, and Tax)
     */
-    static void executePayrollLogic(String[] employeeInfo, String attendanceFile, DateTimeFormatter timeFormat) {
+    static void executePayrollLogic(String[] employeeInfo, ArrayList<String[]> attendanceFile, DateTimeFormatter timeFormat) {
         String empId = employeeInfo[0];
         double hourlyRate = tryParseDouble(employeeInfo[employeeInfo.length - 1]);
         displayProfileHeader(employeeInfo);
@@ -283,20 +294,15 @@ public class MotorPHPayrollSystem {
 
         for (int month = 6; month <= 12; month++) {
             double cutoffOneHours = 0.0, cutoffTwoHours = 0.0;
-            try (BufferedReader attReader = new BufferedReader(new FileReader(attendanceFile))) {
-                attReader.readLine(); String row;
-                while ((row = attReader.readLine()) != null) {
-                    String[] attData = row.split(",");
-                    if (!attData[0].equals(empId)) continue;
-                    String[] dateParts = attData[3].split("/");
-                    if (Integer.parseInt(dateParts[2]) == 2024 && Integer.parseInt(dateParts[0]) == month) {
-                        double dailyHours = computeHours(LocalTime.parse(attData[4], timeFormat), LocalTime.parse(attData[5], timeFormat));
-                        if (Integer.parseInt(dateParts[1]) <= 15) cutoffOneHours += dailyHours; 
-                        else cutoffTwoHours += dailyHours;
-                    }
+            for (String[] attendanceRecord : attendanceFile) {
+                if (!attendanceRecord[0].equals(empId)) continue;
+                String[] dateParts = attendanceRecord[3].split("/");
+                if (Integer.parseInt(dateParts[2]) == 2024 && Integer.parseInt(dateParts[0]) == month) {
+                    double dailyHours = computeHours(LocalTime.parse(attendanceRecord[4], timeFormat), LocalTime.parse(attendanceRecord[5], timeFormat));
+                    if (Integer.parseInt(dateParts[1]) <= 15) cutoffOneHours += dailyHours; 
+                    else cutoffTwoHours += dailyHours;
                 }
-                attReader.close(); 
-           } catch (Exception e) { continue; }
+           }
 
             String monthName = switch (month) { case 6->"June"; case 7->"July"; case 8->"August"; case 9->"September"; case 10->"October"; case 11->"November"; case 12->"December"; default->""; };
             double grossOne = cutoffOneHours * hourlyRate, grossTwo = cutoffTwoHours * hourlyRate, monthlyGross = grossOne + grossTwo;
@@ -310,7 +316,7 @@ public class MotorPHPayrollSystem {
         System.out.println("===================================");
     }
 
-    /* ------------------- METHOD 12: TERMINATE SESSION ------------------------
+    /* ------------------- METHOD 13: TERMINATE SESSION ------------------------
      * This method simply terminates the prorgam but the team decided to turn it
      * into its own method to print a short message and make it reusable.
     */
@@ -318,7 +324,7 @@ public class MotorPHPayrollSystem {
 	System.out.println("\nClosing the program . . .");
     }
 
-    /* -------------------- METHOD 13: FINALIZE PAYROLL ------------------------
+    /* -------------------- METHOD 14: FINALIZE PAYROLL ------------------------
      * This method prints a short message to inform the user that the payroll 
      * processing is successful. It is also designed to be a reusable method.
     */    
@@ -327,7 +333,7 @@ public class MotorPHPayrollSystem {
 	System.out.print("\nProcess another payroll. ");
     }
 
-    /* --------------------- METHOD 14: MAIN METHOD ---------------------------
+    /* --------------------- METHOD 15: MAIN METHOD ---------------------------
      * The main method is the program's entry point which initializes file paths, 
      * handles the login authentication, and routes the user to the appropriate 
      * session handler based on their credentials.
