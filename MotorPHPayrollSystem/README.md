@@ -162,7 +162,7 @@ static void readFile(String filename, ArrayList<String[]> data) {
 		}
 		reader.close();
 	} catch (Exception e) {
-		System.out.println("An error occurred while reading the file (" + filename + "): + e");
+		System.out.println("An error occurred while reading the file (" + filename + "): " + e);
 	}
 }
 ```
@@ -715,6 +715,7 @@ The data files are in CSV format and must be placed inside the Resources folder.
 The team have had many challenges in aligning their schedules and learning paces together, but remained as one to meet the MotorPH's project deadline. Below is the latest project plan of the team, updated as of March 05, 2022.
 
 Project Plan link: https://docs.google.com/spreadsheets/d/1Lux9k8_aYuvp0zqG6S2VvVciuUxU-RZNWELsfzmeJYs/edit?usp=drive_link
+
 
 
 
