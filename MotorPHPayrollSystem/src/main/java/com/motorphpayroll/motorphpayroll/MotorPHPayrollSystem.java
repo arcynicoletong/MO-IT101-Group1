@@ -55,6 +55,11 @@ public class MotorPHPayrollSystem {
      * This method converts a String from the CSV file into a double number.
      * It removes quotes and whitespace from the input to ensure correct parsing.
     */
+	/* NOTE:
+    * This simple CSV reader assumes that the dataset does not contain
+    * commas inside quoted fields. If commas appear within quotes,
+    * a more advanced CSV parsing library such as OpenCSV should be used.
+    */
     static double tryParseDouble(String value) {
         try {
             return Double.parseDouble(value.replace("\"", "").trim());
