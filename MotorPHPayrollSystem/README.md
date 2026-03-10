@@ -256,7 +256,7 @@ static double calculateOverlap(LocalTime startA, LocalTime endA, LocalTime start
 ---
 
 ### Method 6: SSS Calculation  
-This methdod computes the monthly SSS contribution based on gross salary. It utilizes the bracketed contribution table and enforces a maximum cap.
+This method computes the monthly SSS contribution based on gross salary. It utilizes the bracketed contribution table and enforces a maximum cap.
 
 ```java
 static double computeSSS(double monthlyGross) {
@@ -715,6 +715,7 @@ The data files are in CSV format and must be placed inside the Resources folder.
 The team have had many challenges in aligning their schedules and learning paces together, but remained as one to meet the MotorPH's project deadline. Below is the latest project plan of the team, updated as of March 05, 2022.
 
 Project Plan link: https://docs.google.com/spreadsheets/d/1Lux9k8_aYuvp0zqG6S2VvVciuUxU-RZNWELsfzmeJYs/edit?usp=drive_link
+
 
 
 
