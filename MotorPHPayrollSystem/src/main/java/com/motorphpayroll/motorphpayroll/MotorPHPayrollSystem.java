@@ -28,7 +28,7 @@ public class MotorPHPayrollSystem {
         String row;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filename));
-			reader.readLine();
+            reader.readLine();
             while ((row = reader.readLine()) != null) {
                 String[] dataFields = row.split(",");
                 data.add(dataFields);
@@ -55,7 +55,6 @@ public class MotorPHPayrollSystem {
      * This method converts a String from the CSV file into a double number.
      * It removes quotes and whitespace from the input to ensure correct parsing.
     */
-	
     static double tryParseDouble(String value) {
         try {
             return Double.parseDouble(value.replace("\"", "").trim());
@@ -140,14 +139,14 @@ public class MotorPHPayrollSystem {
     */
     static double computePagIbig(double monthlyGross) {
 
-            if (monthlyGross <= 0) {
-                    return 0.0;
+            if (monthlyGross < 1000) {
+                return 0.0;
             }
 
             double contributionRate;
 
             if (monthlyGross <= 1500) {
-                     contributionRate = 0.01;
+                contributionRate = 0.01;
             } else {
                 contributionRate = 0.02;
             }
@@ -157,7 +156,7 @@ public class MotorPHPayrollSystem {
             if (calculatedShare > 100.0) {
                 return 100.0;
             } else {
-            return calculatedShare;
+                return calculatedShare;
             }
     }
 
@@ -166,7 +165,7 @@ public class MotorPHPayrollSystem {
      * Tax is computed on income remaining after statutory deductions.
     */
     static double computeWithholdingTax(double taxableIncome) {
-        if (taxableIncome <= 20833) return 0.0;
+        if (taxableIncome <= 20832) return 0.0;
         else if (taxableIncome < 33333) return (taxableIncome - 20833) * 0.20;
         else if (taxableIncome < 66667) return 2500 + (taxableIncome - 33333) * 0.25;
         else if (taxableIncome < 166667) return 10833 + (taxableIncome - 66667) * 0.30;
@@ -212,6 +211,8 @@ public class MotorPHPayrollSystem {
                 } else if (menuSelection.equals("2")) {
                     terminateSession();
                     sessionActive = false;
+                } else {
+                    invalidInput();
                 }
             } else {
                 System.out.println("[1] Exit the program");
@@ -219,6 +220,8 @@ public class MotorPHPayrollSystem {
                 if (scanner.nextLine().trim().equals("1")) {
                     terminateSession();
                     sessionActive = false;
+                } else {
+                    invalidInput();
                 }
             }
         }
@@ -267,17 +270,21 @@ public class MotorPHPayrollSystem {
                         else { finalizePayrollProcess(); }
                     } else if (subChoice.equals("2")) {
                         for (String[] employee : employeeInformation) {
-                                executePayrollLogic(employee, attendanceInformation, timeFormat);
+                            executePayrollLogic(employee, attendanceInformation, timeFormat);
                         }
                         finalizePayrollProcess();
                     } else if (subChoice.equals("3")) {
                         terminateSession();
                         payrollModeActive = false; sessionActive = false;
+                    } else {
+                        invalidInput();
                     }
                 }
             } else if (staffChoice.equals("2")) {
                 terminateSession();
                 sessionActive = false;
+            } else {
+                invalidInput();
             }
         }
     }
@@ -304,8 +311,8 @@ public class MotorPHPayrollSystem {
                     if (Integer.parseInt(dateParts[1]) <= 15) cutoffOneHours += dailyHours; 
                     else cutoffTwoHours += dailyHours;
                 }
-           }
-
+            }
+            
             String monthName = switch (month) { case 6->"June"; case 7->"July"; case 8->"August"; case 9->"September"; case 10->"October"; case 11->"November"; case 12->"December"; default->""; };
             double grossOne = cutoffOneHours * hourlyRate, grossTwo = cutoffTwoHours * hourlyRate, monthlyGross = grossOne + grossTwo;
             double sss = computeSSS(monthlyGross), philhealth = computePhilHealth(monthlyGross), pagibig = computePagIbig(monthlyGross);
@@ -319,7 +326,7 @@ public class MotorPHPayrollSystem {
     }
 
     /* ------------------- METHOD 13: TERMINATE SESSION ------------------------
-     * This method simply terminates the prorgam but the team decided to turn it
+     * This method simply terminates the program but the team decided to turn it
      * into its own method to print a short message and make it reusable.
     */
     static void terminateSession() {
@@ -334,8 +341,17 @@ public class MotorPHPayrollSystem {
 	System.out.println("Payroll processing is successful!");
 	System.out.print("\nProcess another payroll. ");
     }
+    
+    /* -------------------- METHOD 15: INVALID INPUT ------------------------
+     * This method prints a short message to inform the user that their input 
+     * is invalid (i.e., not among the given options) to avoid repeated code.
+     * It is also designed to be a reusable method.
+    */   
+    static void invalidInput() {
+        System.out.println("Kindly choose among the options available.");
+    }
 
-    /* --------------------- METHOD 15: MAIN METHOD ---------------------------
+    /* --------------------- METHOD 16: MAIN METHOD ---------------------------
      * The main method is the program's entry point which initializes file paths, 
      * handles the login authentication, and routes the user to the appropriate 
      * session handler based on their credentials.
