@@ -201,6 +201,9 @@ public class MotorPHPayrollSystem {
     /* ---------------- METHOD 10: EMPLOYEE SESSION HANDLER ------------------------
      * This method manages the interactive menu for users with the "employee" role.
      * Handles profile retrieval and secure logout procedures.
+     * PURPOSE:
+     * Menu for "employee": view own profile or exit.
+     * Correctness: exact labels/prompt per Process Flow.
     */
     static void handleEmployeeSession(Scanner scanner, String employeeFilePath) {
         ArrayList<String[]> employeeInformation = new ArrayList<>();
