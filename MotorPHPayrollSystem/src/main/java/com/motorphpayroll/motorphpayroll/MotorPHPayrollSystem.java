@@ -19,7 +19,20 @@ import java.util.Scanner;
  * please refer to our README file.
  */
 public class MotorPHPayrollSystem {
-    
+
+ /* ========================= Small Helper Utilities =========================
+       These helpers reduce repetition.	
+ */
+    static String getMonthName(int monthNumber) {
+        // Get month name by number (easy to read)
+        String[] months = {"January","February","March","April","May",
+            "June","July","August","September","October","November","December"
+        };
+
+        String monthName = months[monthNumber - 1];
+        return monthName;
+    }
+	   
     /* ----------------------- METHOD 1: FILE READER -------------------------
      * This method reads a file and stores the information in an
      * ArrayList of String arrays.
@@ -66,7 +79,20 @@ public class MotorPHPayrollSystem {
     /* ---------------- METHOD 4: WORKED HOURS COMPUTATION ---------------------
      * This method calculates the total hours worked by an employee during a shift.
      * It strictly counts time between 8:00 AM and 5:00 PM and applies a 10-minute 
-     * grace period. Logins before 8:11 AM are treated as 8:00 AM as instructed.
+     grace period. Logins before 8:11 AM are treated as 8:00 AM as instructed.
+	 * PURPOSE:
+	 - Compute hours worked for a single day.
+	 - This method calculates the total payable working hours of an employee.
+	 - It enforces MotorPH's attendance policy where working hours are only
+	 counted between 8:00 AM and 5:00 PM.
+	 * RULES:
+	 - A 10-minute grace period is applied to prevent penalizing employees
+	 for very small delays during login.
+	 - Count ONLY within 08:00–17:00 (no overtime counted).
+	 - 10-minute grace period: arriving up to 8:10 counts as 8:00.
+	 * WHY:
+	 - Matches rule "8:05 in and 5:00 out = 8 hours" (no late penalty).
+	 - Exclude unpaid lunch (12:00–13:00) that overlaps the worked window.
     */
     static double computeHours(LocalTime loginTime, LocalTime logoutTime) {
         if (loginTime == null || logoutTime == null) return 0.0;
@@ -136,6 +162,12 @@ public class MotorPHPayrollSystem {
     /* ---------------- METHOD 8: PAG-IBIG CALCULATION ------------------------
      * This method calculates the Pag-IBIG contribution for the employee.
      * Applies tiered rates based on income level and caps at 100 pesos.
+	 * PURPOSE:
+	 - Compute Pag-IBIG (employee share) from monthly gross with a simple tier and cap.
+	 * HOW:
+	 - 0 if grosss < ₱1,000; 1% if ₱1,000 ≤ gross ≤ ₱1,500; otherwise 2%; then cap at ₱100.
+	 * WHY:
+	 - Tier supports lower-income employees; cap prevents overly large shares.
     */
     static double computePagIbig(double monthlyGross) {
 
@@ -143,21 +175,11 @@ public class MotorPHPayrollSystem {
                 return 0.0;
             }
 
-            double contributionRate;
-
-            if (monthlyGross <= 1500) {
-                contributionRate = 0.01;
-            } else {
-                contributionRate = 0.02;
-            }
+            double contributionRate = (monthlyGross <= 1500) ? 0.01 : 0.02;
 
             double calculatedShare = monthlyGross * contributionRate;
 
-            if (calculatedShare > 100.0) {
-                return 100.0;
-            } else {
-                return calculatedShare;
-            }
+            return (calculatedShare > 100.0) ? 100.0 : calculatedShare;
     }
 
     /* ---------------- METHOD 9: WITHHOLDING TAX CALCULATION ------------------
@@ -230,6 +252,8 @@ public class MotorPHPayrollSystem {
     /* -------------- METHOD 11: PAYROLL STAFF SESSION HANDLER -----------------
      * This method manages the interactive menu for users with the "payroll_staff" role.
      * Provides processing options for single or bulk employee payroll.
+	 * PURPOSE:
+	 - Menu for "payroll_staff": one employee, all employees, or exit.
     */
     static void handleStaffSession(Scanner scanner, String empFile, String attFile, DateTimeFormatter timeFormat) {
         ArrayList<String[]> employeeInformation = new ArrayList<>();
@@ -292,7 +316,12 @@ public class MotorPHPayrollSystem {
     /* ------------------ METHOD 12: PAYROLL CALCULATOR ------------------------
      * This method executes the mathematical processing of employee earnings.
      * It connects the attendance records with all the previous math methods 
-     * (i.e. the calculators for SSS, PhilHealth, Pag-IBIG, and Tax)
+      (i.e. the calculators for SSS, PhilHealth, Pag-IBIG, and Tax)
+	 * PURPOSE:
+	 - Connect attendance (daily hours) with contribution calculators to get gross, deductions, and net for each cutoff (June-December).
+	 * WHY:
+	 - Add 1st and 2nd cutoff amounts first, then compute deductions on the combined amount.
+	 - No rounding of values.
     */
     static void executePayrollLogic(String[] employeeInfo, ArrayList<String[]> attendanceFile, DateTimeFormatter timeFormat) {
         String empId = employeeInfo[0];
