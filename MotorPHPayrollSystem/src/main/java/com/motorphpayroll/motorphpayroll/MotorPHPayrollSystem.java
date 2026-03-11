@@ -423,7 +423,7 @@ public class MotorPHPayrollSystem {
             return; // Ends the main method, thus closing the application
         }
 
-        // Lastly, this is logic will redirect user based on role (either employee of staff).
+        // Lastly, this logic redirects the user based on role (either employee of staff).
         System.out.println("\nLog in successful!");
         if (userEntry.equals("employee")) {
             handleEmployeeSession(inputScanner, employeeDetailsPath);
