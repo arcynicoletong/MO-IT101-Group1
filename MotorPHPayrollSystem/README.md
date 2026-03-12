@@ -173,13 +173,13 @@ static void readFile(String filename, ArrayList<String[]> data) {
 This method displays employee information and is designed to be reused in payroll_staff sessions as employee salary information header.
 
 ```java
-static void displayProfileHeader(String[] data) {
-    System.out.println("===================================");
-    System.out.println("EMPLOYEE INFORMATION");
-    System.out.println("Employee #: " + data[0]);
-    System.out.println("Employee Name: " + data[1] + ", " + data[2]);
-    System.out.println("Birthday: " + data[3]);
-}
+static void displayProfileHeader(String[] employeeRecord) {
+        System.out.println("\n===================================");
+        System.out.println("EMPLOYEE INFORMATION");
+        System.out.println("Employee #: " + employeeRecord[0]);
+        System.out.println("Employee Name: " + employeeRecord[1] + ", " + employeeRecord[2]);
+        System.out.println("Birthday: " + employeeRecord[3]);
+    }
 ```
 
 ---
@@ -188,11 +188,14 @@ static void displayProfileHeader(String[] data) {
 This method converts a String from the CSV file into a double number. It removes quotes and whitespace from the input to ensure correct parsing.
 
 ```java
-static double tryParseDouble(String value) {
+  static double tryParseDouble(String rawValue) {
+    if (rawValue == null) return 0.0;
+
     try {
-        return Double.parseDouble(value.replace(""", "").trim());
-    } catch (Exception e) {
-        return 0.0; // If data is missing/broken, we return 0.0 to prevent errors. 
+        String cleaned = rawValue.replace("\"", "").trim();
+        return Double.parseDouble(cleaned);
+    } catch (NumberFormatException e) {
+        return 0.0;
     }
 }
 ```
@@ -331,35 +334,16 @@ This method calculates the Pag-IBIG contribution for an employee. It applies tie
 ```java
 static double computePagIbig(double monthlyGross) {
 
-	// If there’s no income, there’s no contribution.
-	if (monthlyGross <= 0) {
-		return 0.0;
-	}
-	
-	// This sets the Pag-IBIG rate based on the salary bracket 
-	double contributionRate;
-	
-	if (monthlyGross <= 1500) {
-		// For salaries 1,500 and below, the rate is 1%.
-	   	 contributionRate = 0.01;
-	} else {
-	   	// For salaries above 1,500, the rate increases to 2%.
-	    contributionRate = 0.02;
-	}
-	
-	// This is the initial calculation of the employee's share.
-	double calculatedShare = monthlyGross * contributionRate;
-	
-	// This sets the 100-peso ceiling for the employee contribution.
-	if (calculatedShare > 100.0) {
-		/* Even if the math says the share is 500, the rule caps the 
-	    employee's monthly deduction at 100. */
-	    return 100.0;
-	} else {
-	return calculatedShare;
-	}
-}
+            if (monthlyGross < 1000) {
+                return 0.0;
+            }
 
+            double contributionRate = (monthlyGross <= 1500) ? 0.01 : 0.02;
+
+            double calculatedShare = monthlyGross * contributionRate;
+
+            return (calculatedShare > 100.0) ? 100.0 : calculatedShare;
+    }
 
 ```
 
@@ -715,6 +699,7 @@ The data files are in CSV format and must be placed inside the Resources folder.
 The team have had many challenges in aligning their schedules and learning paces together, but remained as one to meet the MotorPH's project deadline. Below is the latest project plan of the team, updated as of March 05, 2022.
 
 Project Plan link: https://docs.google.com/spreadsheets/d/1Lux9k8_aYuvp0zqG6S2VvVciuUxU-RZNWELsfzmeJYs/edit?usp=drive_link
+
 
 
 
