@@ -256,7 +256,7 @@ static double computeHours(LocalTime loginTime, LocalTime logoutTime) {
 ---
 
 ### Method 5: Unpaid Lunch Overlap Calculation
-This method determines the number of minutes where two (2) time intervals overlap (i.e. the whole day worked hours and the 1-hour unpaid lunch).
+This method determines the number of minutes where two (2) time intervals overlap (i.e., the whole day worked hours and the 1-hour unpaid lunch).
 Our team used this method to avoid improper time deduction.
 
 ```java
@@ -571,7 +571,7 @@ static void handleStaffSession(Scanner scanner, String empFile, String attFile, 
 ---
 
 ### Method 12: Payroll Calculator  
-This method executes the mathematical processing of employee earnings. It connects the attendance records with all the previous math methods (i.e. the calculators for SSS, PhilHealth, Pag-IBIG, and Tax).
+This method executes the mathematical processing of employee earnings. It connects the attendance records with all the previous math methods (i.e., the calculators for SSS, PhilHealth, Pag-IBIG, and Tax).
 	• Period covered: Automatically scans attendance to find the earliest year for the employee and computes year-by-year, month-by-month up to the current year.
 	• Output printed only for months with attendance records.
 	• Deductions are taken from the 2nd cutoff only.
@@ -594,7 +594,7 @@ static void executePayrollLogic(String[] employeeInfo, String attendanceFile, Da
         for (String[] record : attendanceFile) {
             if (!record[0].equals(empId)) continue;
 
-			// Attendace data is stored as "MM/DD/YY", so split it by "/"
+			// Attendance data is stored as "MM/DD/YY", so split it by "/"
             String[] dateParts = record[3].split("/");
             
 			// We only proceed if the date looks complete (has 3 parts).
@@ -754,7 +754,7 @@ public static void main(String[] args) {
     String employeeDetailsPath = "resources/MotorPH - Employee Details.csv";
     String attendanceRecordsPath = "resources/MotorPH - Attendance Record.csv";
         
-    // This block initialize input scanner and time format for processing.
+    // This block initializes the input scanner and time format for processing.
     Scanner inputScanner = new Scanner(System.in);
     DateTimeFormatter hourFormat = DateTimeFormatter.ofPattern("H:mm");
 
@@ -775,7 +775,7 @@ public static void main(String[] args) {
         return; // Ends the main method, thus closing the application
 	}
 
-	// Lastly, this is logic will redirect user validated user based on their role (either employee of staff).
+	// Lastly, this logic redirects the validated user based on their role (either employee of staff).
     System.out.println("\nLog in successful!");
     if (userEntry.equals("employee")) {
             handleEmployeeSession(inputScanner, employeeDetailsPath);
