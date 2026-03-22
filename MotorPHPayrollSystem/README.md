@@ -1,6 +1,6 @@
 # MOTORPH PAYROLL SYSTEM (GROUP 1)
 
-### Computer Programming 1 (Milestone 2)
+### Computer Programming 1 (Terminal Assessment)
 
 ### H1101 Group 1
 - Anna Veronica Cortes  
@@ -11,7 +11,7 @@
 
 ---
 
-This program handles profile viewing for MotorPH employees and payroll processing for MotorPH payroll staff. It reads employee details and attendance from two (2) CSV files, enforces MotorPH time rules to compute total hours worked, then calculates gross pay per cut-off, monthly government deductions, and the net salary per cut-off—all without rounding any values. It covers the MotorPH payroll from June to December 2024.
+This program handles profile viewing for MotorPH employees and payroll processing for MotorPH payroll staff. It reads employee details and attendance from two (2) CSV files, enforces MotorPH time rules to compute total hours worked, then calculates gross pay per cut-off, monthly government deductions, and the net salary per cut-off—all without rounding any values. The payroll period is determined dynamically from the earliest year present in the attendance file up to the current year.
 
 ---
 
@@ -69,9 +69,13 @@ Menu:
 
 Payroll options:
 ```
-[1] One employee
-[2] All employees
-[3] Exit the program
+[1] One employee				// Processes payroll for a single employee (by Employee #). After successful processing, the program prints a success message.
+[2] All employees				// Processes payroll for employees and then prints a success message. 
+[3] Exit the program			// Exits the payroll submenu and the program. (The session is terminated immediately)
+```
+If a user inputs an option that is not listed in either menu, the program prints:
+```
+Kindly choose among the options available.
 ```
 
 Payroll output includes:
@@ -85,7 +89,7 @@ Payroll output includes:
 - Cutoff 1: 1–15
 - Cutoff 2: 16–end of month
 - Monthly deductions are applied only on the 2nd cutoff.
-- Payroll runs from June–December 2024 only.
+- Payroll months and years are not hardcoded. The system scans the attendance data and computes from the earliest year present up to the current year; only months with attendance records are printed.
 
 ---
 
@@ -93,6 +97,7 @@ Payroll output includes:
 
 The team coded the program in a highly organized manner. It follows the common project standard where all the definitive and declarative methods come before the main method. The program is divided and sequenced into the following methods:
 
+0. Helper: Ger Month Name
 1. File Reader
 2. Display Employee Information  
 3. Data Parsing  
@@ -106,8 +111,9 @@ The team coded the program in a highly organized manner. It follows the common p
 11. Payroll Staff Session Handler  
 12. Payroll Calculator  
 13. Terminate Session  
-14. Finalize Payroll  
-15. Main Method  
+14. Finalize Payroll
+15. Invalid Input
+16. Main Method
 
 ---
 
@@ -147,6 +153,22 @@ public class MotorPHPayrollSystem { }
 
 ## Method Breakdown
 
+### Helper: Get Month Name
+Utility for converting month numbers to readable names.
+```java
+static String getMonthName(int monthNumber) {
+        // Get month name by number (easy to read)
+        String[] months = {"January","February","March","April","May",
+            "June","July","August","September","October","November","December"
+        };
+
+        String monthName = months[monthNumber - 1];
+        return monthName;
+    }
+```
+
+---
+
 ### Method 1: File Reader
 This method reads a file and stores the information in an ArrayList of String arrays.
 
@@ -157,8 +179,8 @@ static void readFile(String filename, ArrayList<String[]> data) {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		reader.readLine();
 		while ((row = reader.readLine()) != null) {
-			String[] dataFields = row.split(",");
-			data.add(dataFields);
+			String[] csvFields = row.split(",");
+			data.add(csvFields);
 		}
 		reader.close();
 	} catch (Exception e) {
@@ -278,14 +300,14 @@ static double computeSSS(double monthlyGross) {
     double maximumContribution = 1125.00;
 
     // We find how much the salary exceeds the "floor" (3,250).
-    double difference = monthlyGross - baseLowerBound;
+    double excessOverBase = monthlyGross - baseLowerBound;
     
-    // We divide that difference by 500 to see how many "steps" they've climbed.
+    // We divide that difference (excessOverBase) by 500 to see how many "steps" they've climbed.
     // We use Math.floor and (int) to make sure we only count full 500-peso brackets.
-    int bracketsEarned = (int) Math.floor(difference / bracketStep);
+    int brackeCount = (int) Math.floor(excessOverBase / bracketStep);
     
     // We start at the base (157.50) and add 22.50 for every step earned.
-    double totalContribution = baseContribution + (bracketsEarned * incrementPerStep);
+    double totalContribution = baseContribution + (bracketCount * incrementPerStep);
 
     // This sets the maximum contribution to 1,125.00.
     return Math.min(totalContribution, maximumContribution);
@@ -443,12 +465,17 @@ static void handleEmployeeSession(Scanner scanner, String employeeFilePath) {
                	terminateSession();
 				sessionActive = false;
             } else {
+				invalidInput();
+			}
+		} else {
 			// Once information is viewed, we only show the 'Exit' option.
             System.out.println("[1] Exit the program");
             System.out.print("Enter option: ");
             if (scanner.nextLine().trim().equals("1")) {
                 terminateSession();
                 sessionActive = false;
+  			} else {
+                    invalidInput();
             }
         }
     }
@@ -459,7 +486,7 @@ static void handleEmployeeSession(Scanner scanner, String employeeFilePath) {
 ---
 
 ### Method 11: Payroll Staff Session Handler 
-This method manages the interactive menu for users with the "payroll_staff" role. It provides processing options for single or bulk employee payroll.
+This method manages the interactive menu for users with the "payroll_staff" role. It provides processing options for single or bulk employee payroll. After processing either one or all employees, it prints a success message. Choosing **Exit** in the payroll submenu **terminates the program**. 
 
 
 ```java
@@ -526,22 +553,28 @@ static void handleStaffSession(Scanner scanner, String empFile, String attFile, 
                 	else if (subChoice.equals("3")) {
                     	terminateSession();
                     	payrollModeActive = false; sessionActive = false;
-                	}
-            	}
+                	    } else {
+                        invalidInput();
+                    }
+                }
 		// If the user chooses to exit the program instead of processing any payroll.
 		} else if (staffChoice.equals("2")) {
 			terminateSession();
             sessionActive = false;
-		}
-	}
-}
+	          invalidInput();
+            }
+        }
+    }
 
 ```
 
 ---
 
 ### Method 12: Payroll Calculator  
-This method executes the mathematical processing of employee earnings. It connects the attendance records with all the previous math methods (i.e. the calculators for SSS, PhilHealth, Pag-IBIG, and Tax)
+This method executes the mathematical processing of employee earnings. It connects the attendance records with all the previous math methods (i.e. the calculators for SSS, PhilHealth, Pag-IBIG, and Tax).
+	• Period covered: Automatically scans attendance to find the earliest year for the employee and computes year-by-year, month-by-month up to the current year.
+	• Output printed only for months with attendance records.
+	• Deductions are taken from the 2nd cutoff only.
 
 ```java
 static void executePayrollLogic(String[] employeeInfo, String attendanceFile, DateTimeFormatter timeFormat) {
@@ -555,62 +588,131 @@ static void executePayrollLogic(String[] employeeInfo, String attendanceFile, Da
     System.out.println("---------------------------------");
     System.out.println("EMPLOYEE SALARY");
 
-    /* This loop iterates through months 6 to 12 (June to December). 
-     * It calculates the pay for every month in that range. */
-   	for (int month = 6; month <= 12; month++) {
-		double cutoffOneHours = 0.0, cutoffTwoHours = 0.0;
+    // This determines the earliest year found in the attendance record.
+	// Start by assuming "now" as the earliest year.
+        int payrollYear = java.time.LocalDate.now().getYear();
+        for (String[] record : attendanceFile) {
+            if (!record[0].equals(empId)) continue;
 
-		// We search through the ArrayList called attendanceRecord to find every login/logout for this specific employee.
-		for (String[] attendanceRecord : attendanceFile) {
+			// Attendace data is stored as "MM/DD/YY", so split it by "/"
+            String[] dateParts = record[3].split("/");
+            
+			// We only proceed if the date looks complete (has 3 parts).
+			if (dateParts.length == 3) {
+                try {
+                    int recordYear = Integer.parseInt(dateParts[2]);
+                    if (recordYear < payrollYear) {
+                        payrollYear = recordYear;
+                    }
+                } catch (NumberFormatException e){
+            }
+        }
 
-			// If the attendance row doesn't belong to this employee, we skip it.
-			if (!attendanceRecord[0].equals(empId)) continue;
-			String[] dateParts = attendanceRecord[3].split("/");
+		
+// Upper bound of the payroll window is the current calendar year.
+int currentYear = java.time.LocalDate.now().getYear();
 
-			// We only count records for the year 2024 and the current month in the loop.
-			if (Integer.parseInt(dateParts[2]) == 2024 && Integer.parseInt(dateParts[0]) == month) {
+// Flag used to print output only when at least one day exists for a (year, month).
+boolean monthExists;
 
-				// Call Method 4 to calculate hours for this specific day.
-				double dailyHours = computeHours(LocalTime.parse(attendanceRecord[4], timeFormat), LocalTime.parse(attendanceRecord[5], timeFormat));
+// Iterate from the earliest year we detected up to the current year (inclusive).
+for (; payrollYear <= currentYear; payrollYear++) {
 
-				// Split the hours into 1st Cutoff (1-15) or 2nd Cutoff (16-End).
-				if (Integer.parseInt(dateParts[1]) <= 15) cutoffOneHours += dailyHours; 
-				else cutoffTwoHours += dailyHours;
-			}
-		}
+    // Iterate through all months of the year (1 = January, 12 = December).
+    for (int month = 1; month <= 12; month++) {
+        monthExists = false;
 
-		// Logic for converting the month number into a readable name (e.g., 6 -> June).
-        String monthName = switch (month) { case 6->"June"; case 7->"July"; case 8->"August"; case 9->"September"; case 10->"October"; case 11->"November"; case 12->"December"; default->""; };
-        
-		// Math: Gross Pay = Total Hours * Hourly Rate.
-        double grossOne = cutoffOneHours * hourlyRate;
-        double grossTwo = cutoffTwoHours * hourlyRate;
-        double monthlyGross = grossOne + grossTwo;
+        // Accumulators for the two payroll cutoffs within the month.
+        double cutoffOneHours = 0.0, cutoffTwoHours = 0.0;
 
-        // We call Methods 6, 7, 8, and 9 to get the statutory deductions based on total monthly income.
-        double sss = computeSSS(monthlyGross);
-        double philhealth = computePhilHealth(monthlyGross);
-        double pagibig = computePagIbig(monthlyGross);
+        // Scan all attendance rows to aggregate hours that match (employee, year, month).
+        for (String[] attendanceRecord : attendanceFile) {
+
+            // Only consider entries for the current employee.
+            if (!attendanceRecord[0].equals(empId)) continue;
+
+            // Split "MM/DD/YYYY" into parts we can compare.
+            String[] dateParts = attendanceRecord[3].split("/");
+
+            // Check if record is for the current (payrollYear, month) iteration.
+            if (Integer.parseInt(dateParts[2]) == payrollYear && Integer.parseInt(dateParts[0]) == month) {
+                monthExists = true; // At least one day for this month; we will print results.
+
+                // Compute payable hours for that specific day (grace period + lunch deduction handled inside).
+                double dailyHours = computeHours(
+                        LocalTime.parse(attendanceRecord[4], timeFormat),
+                        LocalTime.parse(attendanceRecord[5], timeFormat)
+                );
+
+                // Split the daily hours between Cutoff 1 (1–15) and Cutoff 2 (16–end of month).
+                if (Integer.parseInt(dateParts[1]) <= 15) {
+                    cutoffOneHours += dailyHours;
+                } else {
+                    cutoffTwoHours += dailyHours;
+                }
+            }
+        }
+
+        // Convert numeric month to a friendly name (e.g., 6 -> "June").
+        String monthName = getMonthName(month);
+
+        // Compute gross amounts per cutoff and the total monthly gross.
+        double grossOne = cutoffOneHours * hourlyRate,
+               grossTwo = cutoffTwoHours * hourlyRate,
+               monthlyGross = grossOne + grossTwo;
+
+        // Compute statutory deductions based on the total monthly gross.
+        double sss = computeSSS(monthlyGross),
+               philhealth = computePhilHealth(monthlyGross),
+               pagibig = computePagIbig(monthlyGross);
+
+        // Tax is computed on income AFTER SSS, PhilHealth, and Pag-IBIG.
         double tax = computeWithholdingTax(Math.max(0, monthlyGross - (sss + philhealth + pagibig)));
+
+        // Total deductions (applied on the 2nd cutoff in the output below).
         double totalDeductions = sss + philhealth + pagibig + tax;
 
-        // This prints the final report. 
-        // Note: Per company policy, all deductions are taken out of the 2nd cutoff pay.
-        System.out.println("\nCutoff Date: " + monthName + " 1 to 15\nTotal Hours: " + cutoffOneHours + " hours\nGross Salary: PHP " + grossOne + "\nNet Salary: PHP " + grossOne);
-        System.out.println("\nCutoff Date: " + monthName + " 16 to " + YearMonth.of(2024, month).lengthOfMonth() + "\nTotal Hours: " + cutoffTwoHours + " hours\nGross Salary: PHP " + grossTwo + "\nEach Deduction:\n    SSS: PHP " + sss + "\n    PhilHealth: PHP " + philhealth + "\n    Pag-IBIG: PHP "  + pagibig + "\n    Tax: PHP " + tax + "\nTotal Deductions: PHP " + totalDeductions + "\nNet Salary: PHP " + (grossTwo - totalDeductions));
-	}
+        // Only print for months where this employee actually has attendance.
+        if (monthExists) {
+            // First cutoff (1–15): Net equals gross because deductions are taken in the 2nd cutoff.
+            System.out.println(
+                "\nCutoff Date: " + monthName + " 1 to 15 " + payrollYear +
+                "\nTotal Hours: " + cutoffOneHours + " hours" +
+                "\nGross Salary: PHP " + grossOne +
+                "\nNet Salary: PHP " + grossOne
+            );
+
+            // Second cutoff (16–end): All deductions are shown and subtracted here.
+            System.out.println(
+                "\nCutoff Date: " + monthName + " 16 to " + YearMonth.of(payrollYear, month).lengthOfMonth() + " " + payrollYear  +
+                "\nTotal Hours: " + cutoffTwoHours + " hours" +
+                "\nGross Salary: PHP " + grossTwo +
+                "\nEach Deduction:\n    SSS: PHP " + sss +
+                "\n    PhilHealth: PHP " + philhealth +
+                "\n    Pag-IBIG: PHP "  + pagibig +
+                "\n    Tax: PHP " + tax +
+                "\nTotal Deductions: PHP " + totalDeductions +
+                "\nNet Salary: PHP " + (grossTwo - totalDeductions)
+            );
+        }
+    }
 }
+
+// Visual separator after finishing all months/years for the employee.
+System.out.println("===================================");
+
 
 ```
 
 ---
 
 ### Method 13: Terminate Session
-This method simply terminates the program but the team decided to turn it into its own method to print a short message and make it reusable.
+This method simply terminates the program gracefully with a message and exits immediately.
 
 ```java
 static void terminateSession() {
 	System.out.println("\nClosing the program . . .");
+	System.exit(0);
 }
 
 ```
@@ -630,7 +732,19 @@ static void finalizePayrollProcess() {
 
 ---
 
-### Method 15: Main Method 
+### Method 15: Invalid Input
+This method is a reusable message when the user selects an unavailable option.
+
+```java
+static void invalidInput() {
+        System.out.println("Kindly choose among the options available.");
+    }
+
+```
+
+---
+
+### Method 16: Main Method 
 The main method is the program's entry point which initializes file paths, handles the login authentication, and routes the user to the appropriate session handler based on their credentials.
 
 ```java
@@ -668,6 +782,8 @@ public static void main(String[] args) {
 	} else {
             handleStaffSession(inputScanner, employeeDetailsPath, attendanceRecordsPath, hourFormat);
     }
+
+	inputScanner.close();
 }
 
 ```
@@ -678,7 +794,8 @@ public static void main(String[] args) {
 
 - No rounding is applied to any calculations.
 - Time paid window is strictly from 08:00 to 17:00 only.
-- Payroll is always processed althroughout June to December 2024.
+- Grace period: 8:00–8:10 logins are treated as 8:00.
+- Payroll period is dynamic.
 - No OOP concepts were applied in this implementation (because the team does not know any of those concepts either >.<).
   
 ---
