@@ -15,8 +15,8 @@ import java.util.Scanner;
  * @author H1101_Group 1
  * 
  * This program handles profile viewing and payroll processing for MotorPH
- * payroll staff and employees. For the detailed block-by-block explanation,
- * please refer to our README file.
+ * employees and payroll staff. For a detailed block-by-block explanation,
+ * please refer to the README file.
  */
 public class MotorPHPayrollSystem {
 
