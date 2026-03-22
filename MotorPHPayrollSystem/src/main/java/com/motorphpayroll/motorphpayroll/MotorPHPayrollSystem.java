@@ -89,8 +89,8 @@ public class MotorPHPayrollSystem {
      * This method calculates the payable hours worked by an employee
      * strictly from 8:00 AM to 5:00 PM with a 10-minute grace period.
      * WHY:
-     - It matches the rule "8:05 in and 5:00 out = 8 hours" (no late penalty).
-     - It excludes unpaid lunch (12:00–13:00) that overlaps with the worked window.
+     *- It matches the rule "8:05 in and 5:00 out = 8 hours" (no late penalty).
+     *- It excludes unpaid lunch (12:00–13:00) that overlaps with the worked window.
     */
     static double computeHours(LocalTime loginTime, LocalTime logoutTime) {
         if (loginTime == null || logoutTime == null) return 0.0;
@@ -111,7 +111,7 @@ public class MotorPHPayrollSystem {
 
     /* --------------- METHOD 5: UNPAID LUNCH OVERLAP CALCULATION --------------
      * This method determines the number of minutes where two (2) time intervals 
-     * (i.e. the whole day worked hours and the 1-hour unpaid lunch)overlap. 
+     * (i.e. the whole day worked hours and the 1-hour unpaid lunch) overlap. 
      * Our team used this method to avoid improper 1-hour time deduction.
     */
     static double calculateOverlap(LocalTime startA, LocalTime endA, LocalTime startB, LocalTime endB) {
@@ -388,8 +388,8 @@ public class MotorPHPayrollSystem {
     }
 
     /* -------------------- METHOD 14: FINALIZE PAYROLL ------------------------
-     * This method prints a short message to inform the user that the payroll 
-     * processing is successful. It is also designed to be a reusable method.
+     * This method prints a message indicating that payroll processing is successful.
+     * It is also designed to be a reusable method.
     */    
     static void finalizePayrollProcess() {
 	System.out.println("Payroll processing is successful!");
@@ -420,7 +420,7 @@ public class MotorPHPayrollSystem {
         String employeeDetailsPath = "resources/MotorPH - Employee Details.csv";
         String attendanceRecordsPath = "resources/MotorPH - Attendance Record.csv";
         
-        // This block initialize input scanner and time format for processing.
+        // This block initializes input scanner and time format for processing.
         Scanner inputScanner = new Scanner(System.in);
         DateTimeFormatter hourFormat = DateTimeFormatter.ofPattern("H:mm");
 
@@ -429,7 +429,7 @@ public class MotorPHPayrollSystem {
         System.out.println("      MOTORPH PAYROLL SYSTEM       ");
         System.out.println("===================================");
 
-        // This displays user login field.
+        // This displays user login fields.
         System.out.print("Enter username: ");
         String userEntry = inputScanner.nextLine().trim();
         System.out.print("Enter password: ");
